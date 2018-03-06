@@ -40,6 +40,9 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <phase>generate-resources</phase>
+                        <configuration>
+                            <skip>${skip.install.npm}</skip>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>npm install modules</id>
@@ -51,16 +54,41 @@
 
                         <configuration>
                             <arguments>install</arguments>
+                            <skip>${skip.install.npm.modules}</skip>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>webpack build</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+
+                        <phase>generate-resources</phase>
+
+                        <configuration>
+                            <!-- optional: if not specified, it will run webpack's default
+                            build (and you can remove this whole <configuration> section.) -->
+                            <arguments>run webpack</arguments>
+                        </configuration>
+                    </execution>                
                 </executions>
                 <configuration>
                     <nodeVersion>v8.9.4</nodeVersion>
                     <installDirectory>${datadir}</installDirectory>
-                    <workingDirectory>${basedir}${file.separator}src${file.separator}main${file.separator}webapp${file.separator}js</workingDirectory>
+                    <workingDirectory>${basedir}${file.separator}src${file.separator}main${file.separator}javascript</workingDirectory>
                 </configuration>            
             </plugin>        
         </plugins>
     </build>
+    
+    <profiles>
+        <profile>
+            <id>fastbuild</id>
+            <properties>
+                <skip.install.npm>true</skip.install.npm>
+                <skip.install.npm.modules>true</skip.install.npm.modules>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>
