@@ -4,13 +4,16 @@
   "description": "TODO",
   "main": "index.js",
   "scripts": {
-    "webpack": "node_modules/webpack-cli/bin/webpack.js"
+    "webpack": "node_modules/webpack-cli/bin/webpack.js",
+    "webpack-watch": "node_modules/webpack-cli/bin/webpack.js --watch --progress"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "react": "^16.2.0",
-    "react-dom": "^16.2.0"
+    "react-dom": "^16.2.0",
+    "semantic-ui-less": "^2.2.12",
+    "semantic-ui-react": "^0.78.2"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

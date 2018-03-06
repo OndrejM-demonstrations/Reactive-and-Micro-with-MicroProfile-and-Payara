@@ -1,2 +1,4 @@
 node_modules/
 target/
+/BTCFrontend/src/main/webapp/js/
+/BTCFrontend/src/main/nbproject/private/
