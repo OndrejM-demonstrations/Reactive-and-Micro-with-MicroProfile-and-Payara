@@ -39,8 +39,9 @@ module.exports = {
     },
     resolve: {
         modules: [
-            "node_modules",
-             path.resolve(__dirname, "css")
+            path.resolve(__dirname, "app"),
+            path.resolve(__dirname, "css"),
+            "node_modules"
         ]
     }
 
