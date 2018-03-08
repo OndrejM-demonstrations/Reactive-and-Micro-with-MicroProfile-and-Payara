@@ -18,6 +18,22 @@ module.exports = {
                         presets: ['env', 'react']
                     }
                 }
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    {loader: "style-loader"},
+                    {loader: "css-loader"}
+                ]
+            },
+            {
+                test: /\.(ttf|woff|woff2|eot|svg|png|jpg|jpeg)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {}
+                    }
+                ]
             }
         ]
     }
