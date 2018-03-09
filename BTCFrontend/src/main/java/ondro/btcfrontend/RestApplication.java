@@ -1,13 +1,14 @@
 package ondro.btcfrontend;
 
 import java.util.Set;
+import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 /**
  *
  * @author Ondrej Mihalyi
  */
-@javax.ws.rs.ApplicationPath("rest")
+@ApplicationPath("rest")
 public class RestApplication extends Application {
 
     @Override
@@ -23,7 +24,7 @@ public class RestApplication extends Application {
      * out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
-        resources.add(ondro.btcfrontend.RateResource.class);
+        resources.add(ondro.btcfrontend.boundary.RateResource.class);
     }
 
 }
