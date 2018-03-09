@@ -1,4 +1,4 @@
-package ondro.btcbackend.bitstamp;
+package ondro.btcfrontend.bitstamp;
 
 /**
  *

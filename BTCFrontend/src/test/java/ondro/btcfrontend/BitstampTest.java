@@ -1,9 +1,9 @@
-package ondro.btcbackend;
+package ondro.btcfrontend;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
-import ondro.btcbackend.bitstamp.BitstampTicker;
+import ondro.btcfrontend.bitstamp.BitstampTicker;
 import static org.assertj.core.api.Assertions.*;
 import org.testng.annotations.Test;
 

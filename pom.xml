@@ -13,7 +13,6 @@
     <modules>
         <module>BTCFrontend</module>
         <module>BTCDataProducer</module>
-        <module>BTCBackend</module>
     </modules>
     <build>
         <pluginManagement>

@@ -8,7 +8,7 @@ import javax.ws.rs.core.Application;
  * @author Ondrej Mihalyi
  */
 @javax.ws.rs.ApplicationPath("rest")
-public class ApplicationConfig extends Application {
+public class RestApplication extends Application {
 
     @Override
     public Set<Class<?>> getClasses() {
