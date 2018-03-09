@@ -13,14 +13,25 @@ export default class ExchangeRate extends React.Component {
     
     componentDidMount() {
         this.tick();
-        this.timerID = setInterval(
-            () => this.tick(),
-            this.props.updateIntervalInMillis
-        );
+        this.startTimer();
+    }
+
+    componentWillUpdate() {
+        this.stopTimer();
+        this.startTimer();
     }
 
     componentWillUnmount() {
-        clearInterval(this.timerID);
+        this.stopTimer();
+    }
+
+    render() {
+        console.log("BTC Exchange rate: " + this.state.value)
+        return (
+                <Label className="red">
+                    $ {this.state.value}
+                </Label>
+                );
     }
 
     tick() {
@@ -29,14 +40,18 @@ export default class ExchangeRate extends React.Component {
                 .then(value => this.setState({"value": value}));
     }
 
-    render() {
-        console.log(this.state.value)
-        return (
-                <Label className="red">
-                    $ {this.state.value}
-                </Label>
-                );
+    startTimer() {
+        this.timerID = setInterval(
+            () => this.tick(),
+            this.props.updateIntervalInMillis
+        );
+
     }
+    
+    stopTimer() {
+        clearInterval(this.timerID);
+    }
+    
 }
 
 ExchangeRate.propTypes = {

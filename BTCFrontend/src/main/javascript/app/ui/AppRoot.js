@@ -39,7 +39,7 @@ export default class AppRoot extends React.Component {
                             BTC / USD
                         </Label>
                         <ExchangeRate rateServiceUrl={url} 
-                          updateIntervalInMillis={this.state.rateUpdateIntervalInMillis}/>
+                          updateIntervalInMillis={this.state.config.rateUpdateIntervalInMillis}/>
                     </div>
                 </Container>
                 );
