@@ -12,9 +12,21 @@ export default class ExchangeRate extends React.Component {
     }
     
     componentDidMount() {
-        fetch(this.props.rateServiceUrl) 
-            .then(result=>result.json())
-            .then(value=>this.setState({"value": value}));
+        this.tick();
+        this.timerID = setInterval(
+            () => this.tick(),
+            this.props.updateIntervalInMillis
+        );
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timerID);
+    }
+
+    tick() {
+        fetch(this.props.rateServiceUrl)
+                .then(result => result.json())
+                .then(value => this.setState({"value": value}));
     }
 
     render() {
@@ -28,5 +40,10 @@ export default class ExchangeRate extends React.Component {
 }
 
 ExchangeRate.propTypes = {
-    rateServiceUrl: PropTypes.string.isRequired
+    rateServiceUrl: PropTypes.string.isRequired,
+    updateIntervalInMillis: PropTypes.number
 };
+
+ExchangeRate.defaultProps = {
+    updateIntervalInMillis: 10000
+}

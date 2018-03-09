@@ -6,7 +6,6 @@ import ExchangeRate from 'ui/ExchangeRate'
 export default class AppRoot extends React.Component {
     render() {
         var url = this.props.rootUrl + "rate";
-        console.log(url);
         return (
                 <Container>
                     <Label className="top-header">
