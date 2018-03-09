@@ -2,6 +2,7 @@ package ondro.btcfrontend.boundary;
 
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.CompletableFuture;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -17,6 +18,7 @@ import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.MediaType;
 import ondro.btcfrontend.entity.BitstampTicker;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.faulttolerance.Retry;
 
 /**
  * REST Web Service
@@ -31,7 +33,7 @@ public class RateResource {
     @ConfigProperty(name = "bitstamp.ticker.url", defaultValue = "https://www.bitstamp.net/api/ticker/")
     private URL tickerUrl;
 
-    @GET
+//    @GET
     @Produces(MediaType.APPLICATION_JSON)
     public void getRateFromBackend(@Suspended AsyncResponse response) throws URISyntaxException {
         CompletableFuture<BitstampTicker> cfTicker = new CompletableFuture<>();
@@ -61,4 +63,14 @@ public class RateResource {
         });
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Retry(maxRetries = 100, delay = 1, delayUnit = ChronoUnit.SECONDS)
+    public String getRateFromBackendSynch() throws URISyntaxException {
+        BitstampTicker ticker = ClientBuilder.newClient()
+                .target(tickerUrl.toURI())
+                .request()
+                .get(BitstampTicker.class);
+        return String.valueOf(ticker.getLast());
+    }
 }
