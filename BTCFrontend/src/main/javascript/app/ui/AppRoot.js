@@ -4,6 +4,27 @@ import { Header, Container, Icon, Label } from 'semantic-ui-react'
 import ExchangeRate from 'ui/ExchangeRate'
 
 export default class AppRoot extends React.Component {
+        
+    constructor(props) {
+        super(props);
+        this.state = {
+            config : {
+                rateUpdateIntervalInMillis: 10000
+            }
+        };
+    }
+            
+    componentDidMount() {
+        this.updateConfig();
+    }
+            
+    updateConfig() {
+        var url = this.props.rootUrl + "config";
+        fetch(url)
+            .then(result => result.json())
+            .then(config => this.setState({config: config}));
+    }
+
     render() {
         var url = this.props.rootUrl + "rate";
         return (
@@ -17,7 +38,8 @@ export default class AppRoot extends React.Component {
                         <Label>
                             BTC / USD
                         </Label>
-                        <ExchangeRate rateServiceUrl={url}/>
+                        <ExchangeRate rateServiceUrl={url} 
+                          updateIntervalInMillis={this.state.rateUpdateIntervalInMillis}/>
                     </div>
                 </Container>
                 );
