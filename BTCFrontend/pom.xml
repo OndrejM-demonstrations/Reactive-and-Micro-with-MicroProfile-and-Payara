@@ -104,6 +104,15 @@
                 <skip.webpack.watch>false</skip.webpack.watch>
             </properties>
         </profile>
+        <profile>
+            <id>fastwebbuild</id>
+            <properties>
+                <skip.install.npm>true</skip.install.npm>
+                <skip.install.npm.modules>true</skip.install.npm.modules>
+                <skip.webpack.build>true</skip.webpack.build>
+                <skip.webpack.watch>true</skip.webpack.watch>
+            </properties>
+        </profile>
     </profiles>
 
 </project>
