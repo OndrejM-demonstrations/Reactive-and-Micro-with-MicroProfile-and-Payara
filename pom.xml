@@ -13,7 +13,7 @@
     <modules>
         <module>BTCFrontend</module>
         <module>BTCDataProducer</module>
-    </modules>
+  </modules>
     <build>
         <pluginManagement>
             <plugins>

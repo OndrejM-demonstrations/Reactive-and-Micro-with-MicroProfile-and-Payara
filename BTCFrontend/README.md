@@ -1,10 +1,10 @@
 TODO
 
 OK - add react
-- create a page to display BTC rate and get it via REST request to backend
-- poll BTC rate (config rate, default 10s) - then configure it via sys props and then dynamically via DAS
-- REST endpoint to provide BTC rate
-- provide rate from bitstamp (config URL)
+OK - create a page to display BTC rate and get it via REST request to backend
+OK - poll BTC rate (config rate, default 10s) - then configure it via sys props and then dynamically via DAS
+OK - REST endpoint to provide BTC rate
+OK - provide rate from bitstamp (config URL)
 - add retry, fallback, circuit breaker (only works for synchronous code)
 - add fallback - show last known value stored in Hazelcast/JCache)
 - read data from Kafka (configure Kafka via MP config if possible)

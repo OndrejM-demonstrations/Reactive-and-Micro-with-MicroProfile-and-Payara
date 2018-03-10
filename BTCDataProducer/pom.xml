@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-    <artifactId>BTCmonitor</artifactId>
-    <groupId>ondro</groupId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
+        <artifactId>BTCmonitor</artifactId>
+        <groupId>ondro</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
     <groupId>ondro</groupId>
     <artifactId>BTCDataProducer</artifactId>
@@ -16,9 +16,59 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.test.dir>${project.build.directory}${file.separator}test-resources</project.test.dir>
     </properties>
     
     <dependencies>
+        
+        <!-- tests -->
+        
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>        
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.9.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>fish.payara.arquillian</groupId>
+            <artifactId>arquillian-payara-micro-5-managed</artifactId>
+            <version>1.0.Beta3-m3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>1.1.2</version>
+            <scope>test</scope>
+        </dependency>        
+        <dependency>
+            <groupId>fish.payara.extras</groupId>
+            <artifactId>payara-micro</artifactId>
+            <version>4.1.2.181</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- for connecting to Bitstamp WS API -->
+        <dependency>
+            <groupId>com.pusher</groupId>
+            <artifactId>pusher-java-client</artifactId>
+            <version>1.8.0</version>
+        </dependency>        
+        
+        <!-- MicroProfile 1.2 dependency provided by Payara Server 
+        and Micro in v4.1.2.181 and v5.181 -->
+           
         <dependency>
             <groupId>org.eclipse.microprofile</groupId>
             <artifactId>microprofile</artifactId>
@@ -26,6 +76,125 @@
             <type>pom</type>
             <scope>provided</scope>
         </dependency>
+        
+        <!-- Kafka connector API -->
+        
+        <dependency>
+            <groupId>fish.payara.cloud.connectors.kafka</groupId>
+            <artifactId>kafka-jca-api</artifactId>
+            <version>0.3.0-SNAPSHOT</version>            
+            <scope>provided</scope>
+        </dependency> 
+        <dependency>
+            <groupId>fish.payara.cloud.connectors.kafka</groupId>
+            <artifactId>kafka-rar</artifactId>
+            <version>0.3.0-SNAPSHOT</version>
+            <scope>runtime</scope>
+            <type>rar</type>
+        </dependency>
+        
+        <!-- Java EE API dependencies -->
+
+        <dependency>
+            <groupId>javax.ejb</groupId>
+            <artifactId>ejb-api</artifactId>
+            <version>3.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.resource</groupId>
+            <artifactId>javax.resource-api</artifactId>
+            <version>1.7</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- or use a single Java EE dep -->
+        
+        <!--
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>7.0</version>
+            <scope>provided</scope>
+        </dependency>
+        -->
     </dependencies>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>1.4.0.Final</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>kafka-rar</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>fish.payara.cloud.connectors.kafka</groupId>
+                                    <artifactId>kafka-rar</artifactId>
+                                    <type>rar</type>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>payara-micro</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.test.dir}</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>fish.payara.extras</groupId>
+                                    <artifactId>payara-micro</artifactId>
+                                    <destFileName>payara-micro.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>fish.payara.cloud.connectors.kafka</groupId>
+                                    <artifactId>kafka-rar</artifactId>
+                                    <type>rar</type>
+                                    <destFileName>kafka-rar.rar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.21.0</version>
+                <configuration>
+                    <systemProperties>
+                        <!--<payara.microJar>${project.test.dir}${file.separator}payara-micro.jar</payara.microJar>-->
+                        <payara.microJar>../payara-micro-5.181.jar</payara.microJar>
+                        <payara.extraMicroOptions>--deploy ${project.test.dir}${file.separator}kafka-rar.rar</payara.extraMicroOptions>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
 
 </project>
