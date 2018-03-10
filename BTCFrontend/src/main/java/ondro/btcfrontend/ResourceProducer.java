@@ -1,6 +1,6 @@
 package ondro.btcfrontend;
 
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ExecutorService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.naming.InitialContext;
@@ -16,8 +16,8 @@ public class ResourceProducer {
     @Produces
     @Resource
     @ApplicationScoped
-    public ScheduledExecutorService getDefaultScheduledExecutorService() throws NamingException {
-        return (ScheduledExecutorService)(new InitialContext().lookup("java:comp/DefaultManagedScheduledExecutorService"));
+    public ExecutorService getDefaultScheduledExecutorService() throws NamingException {
+        return (ExecutorService)(new InitialContext().lookup("java:comp/DefaultManagedExecutorService"));
     }
 }
 

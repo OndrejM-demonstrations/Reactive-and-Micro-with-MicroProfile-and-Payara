@@ -5,9 +5,6 @@ import io.reactivex.Flowable;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.temporal.ChronoUnit;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -19,11 +16,9 @@ import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.MediaType;
-import ondro.btcfrontend.Resource;
 import ondro.btcfrontend.entity.BitstampTicker;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.faulttolerance.Retry;
-import org.eclipse.microprofile.faulttolerance.Timeout;
 
 /**
  * REST Web Service
@@ -35,22 +30,14 @@ import org.eclipse.microprofile.faulttolerance.Timeout;
 public class RateResource {
 
     @Inject
-    @ConfigProperty(name = "bitstamp.ticker.url", defaultValue = "https://www.bitstamp.net/api/ticker/")
+    @ConfigProperty(name = "bitstamp.ticker.url", 
+            defaultValue = "https://www.bitstamp.net/api/ticker/")
     private URL tickerUrl;
 
-    @Inject
-    @Resource
-    private ScheduledExecutorService scheduledExec;
-
-    @Inject
-    @Resource
-    private ExecutorService executor;
-    
     @Inject
     @ConfigProperty(defaultValue = "10000")
     private long timeoutInMillis;
     
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public void getRateFromBackend(@Suspended AsyncResponse response)
@@ -74,8 +61,8 @@ public class RateResource {
                     });
 
         }, BackpressureStrategy.BUFFER);
-        fTicker.
-                timeout(timeoutInMillis, TimeUnit.MILLISECONDS)
+        fTicker
+                .timeout(timeoutInMillis, TimeUnit.MILLISECONDS)
                 .map(
                      ticker -> String.valueOf(ticker.getLast()))
                 .doOnNext(rate -> {
