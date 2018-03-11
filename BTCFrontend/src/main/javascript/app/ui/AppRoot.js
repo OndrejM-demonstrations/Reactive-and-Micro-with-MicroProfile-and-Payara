@@ -20,30 +20,30 @@ export default class AppRoot extends React.Component {
     }
             
     updateConfig() {
-        var url = this.props.rootUrl + "config";
+        const url = this.props.rootUrl + "config";
         fetch(url)
             .then(result => result.json())
             .then(config => this.setState({config: config}));
     }
 
     render() {
-        var rateSvcUrl = this.props.rootUrl + "rate";
-        var btctxSvcUrl = this.props.rootUrl + "btctx";
+        const rateSvcUrl = this.props.rootUrl + "rate";
+        const btctxSvcUrl = this.props.rootUrl + "btctx";
         return (
                 <Container>
-                    <Label className="top-header">
-                        <Header as="h1">
-                            Bitcoin exchange rate
-                        </Header>
-                    </Label>
                     <div>
-                        <Label>
-                            BTC / USD
+                        <Label className="top-header">
+                            <Header as="h1">
+                                Bitcoin exchange rate
+                            </Header>
                         </Label>
                         <ExchangeRate rateServiceUrl={rateSvcUrl} 
                           updateIntervalInMillis={this.state.config.rateUpdateIntervalInMillis}/>
+                        <Label>
+                            BTC / USD
+                        </Label>
                     </div>
-                    <div>
+                    <div className="panel">
                         <Transactions btctxServiceUrl={btctxSvcUrl}/>
                     </div>
                 </Container>

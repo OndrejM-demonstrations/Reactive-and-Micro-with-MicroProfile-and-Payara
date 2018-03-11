@@ -8,5 +8,13 @@ html {
 }
 
 .top-header {
-    width: 100%;
+    /*width: 100%;*/
+}
+
+table.ui.table td, table.ui.table thead th {
+    padding: 0 0.5em;
+}
+
+div.panel {
+    margin: 1em;
 }
