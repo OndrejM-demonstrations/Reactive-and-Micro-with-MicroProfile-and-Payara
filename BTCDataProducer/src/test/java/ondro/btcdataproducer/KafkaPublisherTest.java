@@ -27,6 +27,6 @@ public class KafkaPublisherTest {
 
     @Test
     public void canSendMessage() throws Exception {
-        publisher.sendMessage("Hello, world");
+        publisher.sendBtcTxMessage("Hello, world");
     }
 }

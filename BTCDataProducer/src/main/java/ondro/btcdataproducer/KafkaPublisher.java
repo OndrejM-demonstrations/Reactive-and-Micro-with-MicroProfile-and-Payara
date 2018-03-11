@@ -19,7 +19,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  *
  * @author Ondrej Mihalyi
  */
-@ConnectionFactoryDefinition(name = "java:global/env/KafkaConnectionFactoryx",
+@ConnectionFactoryDefinition(name = "java:global/env/KafkaConnectionFactory",
         description = "Kafka Conn Factory",
         interfaceName = "fish.payara.cloud.connectors.kafka.KafkaConnectionFactory",
         resourceAdapter = "kafka-rar",
@@ -30,14 +30,14 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @Stateless
 public class KafkaPublisher {
 
-    @Resource(lookup = "java:global/env/KafkaConnectionFactoryx")
+    @Resource(lookup = "java:global/env/KafkaConnectionFactory")
     KafkaConnectionFactory factory;
     
     @Inject
     @ConfigProperty(name = "kafka.topic.name", defaultValue = "btctx")
     private String topicName;
 
-    public void sendMessage(String value) throws Exception {
+    public void sendBtcTxMessage(String value) throws Exception {
 
         try (KafkaConnection conn = factory.createConnection()) {
             conn.send(new ProducerRecord<>(topicName, value), (RecordMetadata metadata, Exception e) -> {

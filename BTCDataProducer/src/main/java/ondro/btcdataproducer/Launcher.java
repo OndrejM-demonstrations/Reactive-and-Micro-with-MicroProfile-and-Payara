@@ -33,7 +33,7 @@ public class Launcher {
             bitstampConnector.connect(
                     data -> {
                         try {
-                            publisher.sendMessage(data);
+                            publisher.sendBtcTxMessage(data);
                         } catch (Exception ex) {
                             Logging.of(this).log(Level.SEVERE, null, ex);
                             throw new RuntimeException();

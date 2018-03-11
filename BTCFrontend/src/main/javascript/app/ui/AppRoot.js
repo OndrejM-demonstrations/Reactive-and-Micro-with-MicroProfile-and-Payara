@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types'
 import { Header, Container, Icon, Label } from 'semantic-ui-react'
 import ExchangeRate from 'ui/ExchangeRate'
+import Transactions from 'ui/Transactions'
 
 export default class AppRoot extends React.Component {
         
@@ -26,7 +27,8 @@ export default class AppRoot extends React.Component {
     }
 
     render() {
-        var url = this.props.rootUrl + "rate";
+        var rateSvcUrl = this.props.rootUrl + "rate";
+        var btctxSvcUrl = this.props.rootUrl + "btctx";
         return (
                 <Container>
                     <Label className="top-header">
@@ -38,8 +40,11 @@ export default class AppRoot extends React.Component {
                         <Label>
                             BTC / USD
                         </Label>
-                        <ExchangeRate rateServiceUrl={url} 
+                        <ExchangeRate rateServiceUrl={rateSvcUrl} 
                           updateIntervalInMillis={this.state.config.rateUpdateIntervalInMillis}/>
+                    </div>
+                    <div>
+                        <Transactions btctxServiceUrl={btctxSvcUrl}/>
                     </div>
                 </Container>
                 );

@@ -24,6 +24,7 @@ public class RestApplication extends Application {
      * out calling this method in getClasses().
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        resources.add(ondro.btcfrontend.boundary.BtcTxResource.class);
         resources.add(ondro.btcfrontend.boundary.ConfigResource.class);
         resources.add(ondro.btcfrontend.boundary.RateResource.class);
     }
