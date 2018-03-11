@@ -5,7 +5,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import ondro.btcfrontend.entity.BitstampTicker;
 import static org.assertj.core.api.Assertions.*;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 /**
  *

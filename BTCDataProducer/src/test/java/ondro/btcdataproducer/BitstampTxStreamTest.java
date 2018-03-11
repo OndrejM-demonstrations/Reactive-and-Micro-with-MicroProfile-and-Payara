@@ -34,7 +34,7 @@ public class BitstampTxStreamTest {
         connectTo(pusher);
         
         try {
-            Thread.sleep(10000);
+            Thread.sleep(30000);
             Assert.fail("No event received before timeout");
         } catch (InterruptedException ex) {
         }

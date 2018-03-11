@@ -2,6 +2,7 @@ package ondro.btcfrontend.boundary;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.temporal.ChronoUnit;
@@ -16,6 +17,7 @@ import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.MediaType;
+import ondro.btcfrontend.Resource;
 import ondro.btcfrontend.entity.BitstampTicker;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.faulttolerance.Retry;
@@ -39,7 +41,22 @@ public class RateResource {
     @Inject
     @ConfigProperty(defaultValue = "10000")
     private long timeoutInMillis;
+    
+    @Inject
+    @Resource
+    private Scheduler scheduler;
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Retry(maxRetries = 100, delay = 1, delayUnit = ChronoUnit.SECONDS)
+    public String getRateFromBackendSync() throws URISyntaxException {
+        BitstampTicker ticker = ClientBuilder.newClient()
+                .target(tickerUrl.toURI())
+                .request()
+                .get(BitstampTicker.class);
+        return String.valueOf(ticker.getLast());
+    }
+    
 //    @GET
     @Produces(MediaType.APPLICATION_JSON)
     public void getRateFromBackendAsyncEE7(@Suspended AsyncResponse response)
@@ -61,7 +78,10 @@ public class RateResource {
                         emitter.onError(throwable);
                     }
                 });
-        }, BackpressureStrategy.BUFFER);
+        }, BackpressureStrategy.DROP);
+        fTicker = fTicker
+                .subscribeOn(scheduler)
+                .observeOn(scheduler);
         
         fTicker.timeout(timeoutInMillis, TimeUnit.MILLISECONDS)
             .map(
@@ -75,7 +95,7 @@ public class RateResource {
             .subscribe();
     }
 
-    @GET
+//    @GET
     @Produces(MediaType.APPLICATION_JSON)
     public void getRateFromBackendAsyncEE8(@Suspended AsyncResponse response)
             throws URISyntaxException {
@@ -97,14 +117,4 @@ public class RateResource {
             .subscribe();
     }
 
-//    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Retry(maxRetries = 100, delay = 1, delayUnit = ChronoUnit.SECONDS)
-    public String getRateFromBackendSync() throws URISyntaxException {
-        BitstampTicker ticker = ClientBuilder.newClient()
-                .target(tickerUrl.toURI())
-                .request()
-                .get(BitstampTicker.class);
-        return String.valueOf(ticker.getLast());
-    }
 }
