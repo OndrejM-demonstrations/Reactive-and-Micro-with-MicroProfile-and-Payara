@@ -28,7 +28,7 @@ public class BitstampConnector {
 
     public void connect(Consumer<String> listener, ScheduledExecutorService executor) {
         pusher = createBitstampTradesPusher((String channel, String event, String data) -> {
-            listener.accept(data);
+            executor.submit(() -> listener.accept(data));
         });
         connectTo(pusher);
     }

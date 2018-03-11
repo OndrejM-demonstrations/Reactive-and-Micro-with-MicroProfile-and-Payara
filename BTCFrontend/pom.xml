@@ -72,6 +72,14 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Java EE API dependencies -->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>8.0</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- MicroProfile API -->
         <dependency>
             <groupId>org.eclipse.microprofile</groupId>
@@ -94,20 +102,37 @@
             <artifactId>jersey-rx-client-rxjava2</artifactId>
             <version>2.26</version>
         </dependency>    
+
+        <!-- Kafka connector API -->
+        
+        <dependency>
+            <groupId>fish.payara.cloud.connectors.kafka</groupId>
+            <artifactId>kafka-jca-api</artifactId>
+            <version>0.3.0-SNAPSHOT</version>            
+            <scope>provided</scope>
+        </dependency> 
+        <dependency>
+            <groupId>fish.payara.cloud.connectors.kafka</groupId>
+            <artifactId>kafka-rar</artifactId>
+            <version>0.3.0-SNAPSHOT</version>
+            <scope>runtime</scope>
+            <type>rar</type>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.21.0</version>
-                <configuration>
-                    <systemProperties>
-                        <!--<payara.microJar>${project.test.dir}${file.separator}payara-micro.jar</payara.microJar>-->
-                        <payara.microJar>../payara-micro-5.181.jar</payara.microJar>
-                        <xpayara.extraMicroOptions>--deploy ${project.test.dir}${file.separator}kafka-rar.rar</xpayara.extraMicroOptions>
-                    </systemProperties>
-                </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>kafka-rar</id>
+                    </execution>
+                    <execution>
+                        <id>payara-micro</id>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>com.github.eirslett</groupId>

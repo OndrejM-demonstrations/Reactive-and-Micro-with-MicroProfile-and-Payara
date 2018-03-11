@@ -1,6 +1,8 @@
 package ondro.btcdataproducer;
 
 import java.util.logging.Level;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.enterprise.context.ApplicationScoped;
@@ -14,24 +16,36 @@ import ondro.btcdataproducer.util.Logging;
  *
  * @author Ondrej Mihalyi
  */
-@Dependent
+@ApplicationScoped
 public class Launcher {
-    
+
     @Resource
     private ManagedScheduledExecutorService executor;
-    
+
     @Inject
     private KafkaPublisher publisher;
-    
+
+    private BitstampConnector bitstampConnector;
+
     public void start(@Observes @Initialized(ApplicationScoped.class) Object context) {
-        new BitstampConnector().connect(data -> {
-            try {
-                publisher.sendMessage(data);
-            } catch (Exception ex) {
-                Logging.of(this).log(Level.SEVERE, null, ex);
-                throw new RuntimeException();
-            }
-        }, executor);
+        executor.submit(() -> {
+            bitstampConnector = new BitstampConnector();
+            bitstampConnector.connect(
+                    data -> {
+                        try {
+                            publisher.sendMessage(data);
+                        } catch (Exception ex) {
+                            Logging.of(this).log(Level.SEVERE, null, ex);
+                            throw new RuntimeException();
+                        }
+                    }, executor);
+        });
+    }
+
+    @PreDestroy
+    private void cleanup() {
+        if (bitstampConnector != null) {
+            bitstampConnector.disconnect();
+        }
     }
 }
-
