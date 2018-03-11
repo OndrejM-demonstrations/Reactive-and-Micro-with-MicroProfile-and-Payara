@@ -2,13 +2,13 @@ package ondro.btcdataproducer;
 
 import fish.payara.cloud.connectors.kafka.api.KafkaConnection;
 import fish.payara.cloud.connectors.kafka.api.KafkaConnectionFactory;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.resource.ConnectionFactoryDefinition;
 import javax.resource.spi.TransactionSupport.TransactionSupportLevel;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  *
@@ -27,11 +27,15 @@ public class KafkaPublisher {
 
     @Resource(lookup = "java:global/env/KafkaConnectionFactory")
     KafkaConnectionFactory factory;
+    
+    @Inject
+    @ConfigProperty(name = "kafka.topic.name", defaultValue = "btctx")
+    private String topicName;
 
-    public void sendMessage() throws Exception {
+    public void sendMessage(Object value) throws Exception {
 
         try (KafkaConnection conn = factory.createConnection()) {
-            conn.send(new ProducerRecord("test", "hello", "world"));
+            conn.send(new ProducerRecord(topicName, value));
         }
     }
 }

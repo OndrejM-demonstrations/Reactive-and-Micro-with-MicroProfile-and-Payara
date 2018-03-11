@@ -7,37 +7,37 @@ import com.pusher.client.channel.SubscriptionEventListener;
 import com.pusher.client.connection.ConnectionEventListener;
 import com.pusher.client.connection.ConnectionState;
 import com.pusher.client.connection.ConnectionStateChange;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
-import org.junit.Test;
-import org.junit.Assert;
 
 /**
- *
+ * 
  * @author Ondrej Mihalyi
  */
-public class BitstampTxStreamTest {
+public class BitstampConnector {
 
     public static final String BITSTAMP_APP_KEY = "de504dc5763aeef9ff52";
 
-    @Test
-    public void canGetTxFromBitstampStream() {
+    private Pusher pusher;
+    private ScheduledExecutorService executor;
+    ScheduledFuture<?> scheduledReconnect = null;
 
-        Thread mainThread = Thread.currentThread();
-
-        Pusher pusher = createBitstampTradesPusher(new SubscriptionEventListener() {
-            @Override
-            public void onEvent(String channel, String event, String data) {
-                Logger.getGlobal().info("Received event with data: " + data);
-                mainThread.interrupt();
-            }
+    public void connect(Consumer<String> listener, ScheduledExecutorService executor) {
+        pusher = createBitstampTradesPusher((String channel, String event, String data) -> {
+            listener.accept(data);
         });
         connectTo(pusher);
-        
-        try {
-            Thread.sleep(10000);
-            Assert.fail("No event received before timeout");
-        } catch (InterruptedException ex) {
+    }
+
+    public void disconnect() {
+        if (scheduledReconnect != null) {
+            scheduledReconnect.cancel(true);
         }
+        pusher.disconnect();
     }
 
     private Pusher createBitstampTradesPusher(SubscriptionEventListener subscriptionEventListener) {
@@ -54,14 +54,25 @@ public class BitstampTxStreamTest {
         pusher.connect(new ConnectionEventListener() {
             @Override
             public void onConnectionStateChange(ConnectionStateChange change) {
-                Logger.getGlobal().info("State changed to " + change.getCurrentState()
+                log().info("State changed to " + change.getCurrentState()
                         + " from " + change.getPreviousState());
             }
 
             @Override
             public void onError(String message, String code, Exception e) {
-                Logger.getGlobal().info("There was a problem connecting!");
+                int WAIT_SECONDS_BEFORE_RECONNECT = 5;
+                log().warning("There was a problem connecting! Will attempt to reconnect in " + WAIT_SECONDS_BEFORE_RECONNECT + " seconds");
+                scheduledReconnect = executor.schedule(() -> {
+                    scheduledReconnect = null;
+                    pusher.connect();
+                }, WAIT_SECONDS_BEFORE_RECONNECT, TimeUnit.SECONDS);
             }
-        }, ConnectionState.ALL);
+
+            private Logger log() {
+                return Logger.getLogger(this.getClass().getName());
+            }
+        }, ConnectionState.ALL
+        );
     }
+
 }

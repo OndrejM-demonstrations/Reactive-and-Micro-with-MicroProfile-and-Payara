@@ -94,30 +94,12 @@
         </dependency>
         
         <!-- Java EE API dependencies -->
-
-        <dependency>
-            <groupId>javax.ejb</groupId>
-            <artifactId>ejb-api</artifactId>
-            <version>3.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.resource</groupId>
-            <artifactId>javax.resource-api</artifactId>
-            <version>1.7</version>
-            <scope>provided</scope>
-        </dependency>
-        
-        <!-- or use a single Java EE dep -->
-        
-        <!--
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>
-        -->
     </dependencies>
     
     <dependencyManagement>
