@@ -30,26 +30,25 @@ export default class AppRoot extends React.Component {
         const rateSvcUrl = this.props.rootUrl + "rate";
         const btctxSvcUrl = this.props.rootUrl + "btctx";
         return (
-                <Container>
-                    <div>
-                        <Label className="top-header">
-                            <Header as="h1">
-                                Bitcoin exchange rate
-                            </Header>
-                        </Label>
-                        <ExchangeRate rateServiceUrl={rateSvcUrl} 
-                          updateIntervalInMillis={this.state.config.rateUpdateIntervalInMillis}/>
-                        <Label>
-                            BTC / USD
-                        </Label>
-                    </div>
-                    <div className="panel">
-                        <Transactions btctxServiceUrl={btctxSvcUrl}/>
-                    </div>
-                </Container>
-                );
+            <Container>
+                <div>
+                    <Label className="top-header">
+                        <Header as="h1">
+                            Bitcoin exchange rate
+                        </Header>
+                    </Label>
+                    <ExchangeRate rateServiceUrl={rateSvcUrl} 
+                      updateIntervalInMillis={this.state.config.rateUpdateIntervalInMillis}/>
+                    <Label>
+                        BTC / USD
+                    </Label>
+                </div>
+
+
+            </Container>
+        );
     }
-    
+ 
 }
 
 AppRoot.propTypes = {
@@ -59,3 +58,9 @@ AppRoot.propTypes = {
 AppRoot.defaultProps = {
     rootUrl: "rest/" // root url for subsequent requests to the server
 };
+
+/*
+                <div className="panel">
+                  <Transactions btctxServiceUrl={btctxSvcUrl}/>
+                </div>
+ */
