@@ -19,6 +19,8 @@ import javax.ws.rs.core.MediaType;
 import ondro.btcfrontend.entity.BitstampTicker;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.faulttolerance.Retry;
+import org.glassfish.jersey.client.rx.rxjava2.RxFlowableInvoker;
+import org.glassfish.jersey.client.rx.rxjava2.RxFlowableInvokerProvider;
 
 /**
  * REST Web Service
@@ -30,54 +32,75 @@ import org.eclipse.microprofile.faulttolerance.Retry;
 public class RateResource {
 
     @Inject
-    @ConfigProperty(name = "bitstamp.ticker.url", 
+    @ConfigProperty(name = "bitstamp.ticker.url",
             defaultValue = "https://www.bitstamp.net/api/ticker/")
     private URL tickerUrl;
 
     @Inject
     @ConfigProperty(defaultValue = "10000")
     private long timeoutInMillis;
-    
-    @GET
+
+//    @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public void getRateFromBackend(@Suspended AsyncResponse response)
+    public void getRateFromBackendAsyncEE7(@Suspended AsyncResponse response)
             throws URISyntaxException {
         Flowable<BitstampTicker> fTicker = Flowable.create(emitter -> {
             ClientBuilder.newClient()
-                    .target(tickerUrl.toURI())
-                    .request()
-                    .async()
-                    .get(new InvocationCallback<BitstampTicker>() {
-                        @Override
-                        public void completed(BitstampTicker response) {
-                            emitter.onNext(response);
-                            emitter.onComplete();
-                        }
+                .target(tickerUrl.toURI())
+                .request()
+                .async()
+                .get(new InvocationCallback<BitstampTicker>() {
+                    @Override
+                    public void completed(BitstampTicker response) {
+                        emitter.onNext(response);
+                        emitter.onComplete();
+                    }
 
-                        @Override
-                        public void failed(Throwable throwable) {
-                            emitter.onError(throwable);
-                        }
-                    });
-
+                    @Override
+                    public void failed(Throwable throwable) {
+                        emitter.onError(throwable);
+                    }
+                });
         }, BackpressureStrategy.BUFFER);
-        fTicker
-                .timeout(timeoutInMillis, TimeUnit.MILLISECONDS)
-                .map(
-                     ticker -> String.valueOf(ticker.getLast()))
-                .doOnNext(rate -> {
-                    response.resume(rate);
-                })
-                .doOnError(e -> {
-                    response.resume(e);
-                })
-                .subscribe();
+        
+        fTicker.timeout(timeoutInMillis, TimeUnit.MILLISECONDS)
+            .map(
+                    ticker -> String.valueOf(ticker.getLast()))
+            .doOnNext(rate -> {
+                response.resume(rate);
+            })
+            .doOnError(e -> {
+                response.resume(e);
+            })
+            .subscribe();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public void getRateFromBackendAsyncEE8(@Suspended AsyncResponse response)
+            throws URISyntaxException {
+        ClientBuilder.newClient()
+            .register(RxFlowableInvokerProvider.class)
+            .target(tickerUrl.toURI())
+            .request()
+            .rx(RxFlowableInvoker.class)
+            .get(BitstampTicker.class)
+            .timeout(timeoutInMillis, TimeUnit.MILLISECONDS)
+            .map(
+                    ticker -> String.valueOf(ticker.getLast()))
+            .doOnNext(rate -> {
+                response.resume(rate);
+            })
+            .doOnError(e -> {
+                response.resume(e);
+            })
+            .subscribe();
     }
 
 //    @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Retry(maxRetries = 100, delay = 1, delayUnit = ChronoUnit.SECONDS)
-    public String getRateFromBackendSynch() throws URISyntaxException {
+    public String getRateFromBackendSync() throws URISyntaxException {
         BitstampTicker ticker = ClientBuilder.newClient()
                 .target(tickerUrl.toURI())
                 .request()
