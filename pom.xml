@@ -10,6 +10,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <datadir>${user.home}${file.separator}.cache</datadir>
         <project.test.dir>${project.build.directory}${file.separator}test-resources</project.test.dir>
+        <payara.micro.jar>../payara-micro-5.181.jar</payara.micro.jar>
+        <payara.micro.jar.test>${payara.micro.jar}</payara.micro.jar.test>
+        <!--<payara.micro.jar.test>${project.test.dir}${file.separator}payara-micro.jar</payara.micro.jar.test>-->
     </properties>
     <modules>
         <module>BTCFrontend</module>
@@ -66,6 +69,7 @@
                                         <groupId>fish.payara.cloud.connectors.kafka</groupId>
                                         <artifactId>kafka-rar</artifactId>
                                         <type>rar</type>
+                                        <destFileName>kafka-rar.rar</destFileName>
                                     </artifactItem>
                                 </artifactItems>
                             </configuration>
@@ -100,8 +104,7 @@
                     <version>2.21.0</version>
                     <configuration>
                         <systemProperties>
-                            <!--<payara.microJar>${project.test.dir}${file.separator}payara-micro.jar</payara.microJar>-->
-                            <payara.microJar>../payara-micro-5.181.jar</payara.microJar>
+                            <payara.microJar>${payara.micro.jar.test}</payara.microJar>
                             <payara.extraMicroOptions>--deploy ${project.test.dir}${file.separator}kafka-rar.rar</payara.extraMicroOptions>
                         </systemProperties>
                     </configuration>
