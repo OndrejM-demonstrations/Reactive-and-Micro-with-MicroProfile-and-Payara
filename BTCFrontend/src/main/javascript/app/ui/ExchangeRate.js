@@ -12,7 +12,7 @@ export default class ExchangeRate extends React.Component {
     }
     
     componentDidMount() {
-        this.tick();
+        this.fetchRate();
         this.startTimer();
     }
 
@@ -34,7 +34,7 @@ export default class ExchangeRate extends React.Component {
                 );
     }
 
-    tick() {
+    fetchRate() {
         fetch(this.props.rateServiceUrl)
                 .then(result => result.json())
                 .then(value => this.setState({"value": value}));
