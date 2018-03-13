@@ -7,7 +7,7 @@ export default class ExchangeRate extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            value : 0
+            updateIntervalInMillis : props.updateIntervalInMillis
         };
     }
     
@@ -16,7 +16,11 @@ export default class ExchangeRate extends React.Component {
         this.startTimer();
     }
 
-    componentWillUpdate() {
+    componentWillReceiveProps(props) {
+        this.setState({updateIntervalInMillis: props.updateIntervalInMillis});
+    }
+    
+    componentWillUpdate(props) {
         this.stopTimer();
         this.startTimer();
     }
@@ -26,7 +30,6 @@ export default class ExchangeRate extends React.Component {
     }
 
     render() {
-        console.log("BTC Exchange rate: " + this.state.value)
         return (
                 <Label className="red">
                     $ {this.state.value}
@@ -37,13 +40,16 @@ export default class ExchangeRate extends React.Component {
     fetchRate() {
         fetch(this.props.rateServiceUrl)
                 .then(result => result.json())
-                .then(value => this.setState({"value": value}));
+                .then(value => {
+                    console.log("BTC Exchange rate: " + value)
+                    this.setState({"value": value})
+                });
     }
 
     startTimer() {
         this.timerID = setInterval(
-            () => this.tick(),
-            this.props.updateIntervalInMillis
+            () => this.fetchRate(),
+            this.state.updateIntervalInMillis
         );
 
     }
