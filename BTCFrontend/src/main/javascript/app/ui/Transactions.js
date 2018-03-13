@@ -34,21 +34,27 @@ export default class Transactions extends React.Component {
                 </Table.Row>
                 );
         });
-        return (
-            <Table celled>
-                <Table.Header>
-                  <Table.Row>
-                    <Table.HeaderCell>Timestamp</Table.HeaderCell>
-                    <Table.HeaderCell>Price</Table.HeaderCell>
-                    <Table.HeaderCell>Amount</Table.HeaderCell>
-                  </Table.Row>
-                </Table.Header>
+        if (this.state.transactions.length > 0) {
+            return (
+                <Table celled>
+                    <Table.Header>
+                      <Table.Row>
+                        <Table.HeaderCell>Timestamp</Table.HeaderCell>
+                        <Table.HeaderCell>Price</Table.HeaderCell>
+                        <Table.HeaderCell>Amount</Table.HeaderCell>
+                      </Table.Row>
+                    </Table.Header>
 
-                <Table.Body>
-                     {rows}
-                </Table.Body>
-            </Table>
-        );
+                    <Table.Body>
+                         {rows}
+                    </Table.Body>
+                </Table>
+            );
+        } else {
+            return (
+                    <span></span>
+                    )
+        }
     }
 }
 
