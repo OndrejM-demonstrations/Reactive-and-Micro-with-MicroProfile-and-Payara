@@ -24,7 +24,6 @@ export default class Transactions extends React.Component {
 
    render() {
         const rows = this.state.transactions.map((tx) => {
-            console.log(tx);
             const date = new Date(tx.timestamp * 1000).toLocaleString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
             return (
                 <Table.Row key={tx.timestamp + tx.price + tx.amount}>
