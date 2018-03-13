@@ -40,6 +40,9 @@ export default class AppRoot extends React.Component {
                     </Label>
                 </div>
 
+                <div className="panel">
+                  <Transactions btctxServiceUrl={btctxSvcUrl}/>
+                </div>
 
             </Container>
         );
@@ -81,8 +84,3 @@ AppRoot.defaultProps = {
     rootUrl: "rest/" // root url for subsequent requests to the server
 };
 
-/*
-                <div className="panel">
-                  <Transactions btctxServiceUrl={btctxSvcUrl}/>
-                </div>
- */
