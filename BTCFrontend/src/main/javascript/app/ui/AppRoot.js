@@ -19,7 +19,9 @@ export default class AppRoot extends React.Component {
         const url = this.props.rootUrl + "config";
         fetch(url)
             .then(result => result.json())
-            .then(config => this.setState({config: config}));
+            .then(config => {
+                this.setState({config: config});
+            });
     }
 
     render() {
@@ -53,27 +55,14 @@ export default class AppRoot extends React.Component {
         this.startTimer();
     }
             
-    componentWillUpdate() {
-        this.stopTimer();
-        this.startTimer();
-    }
-
-    componentWillUnmount() {
-        this.stopTimer();
-    }
-
     startTimer() {
-        this.timerID = setInterval(
+        setInterval(
             () => this.updateConfig(),
             1000
         );
 
     }
 
-    stopTimer() {
-        clearInterval(this.timerID);
-    }
-    
 }
 
 AppRoot.propTypes = {

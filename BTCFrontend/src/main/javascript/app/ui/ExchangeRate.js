@@ -7,7 +7,8 @@ export default class ExchangeRate extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            updateIntervalInMillis : props.updateIntervalInMillis
+            value: 0,
+            updateIntervalInMillis: this.props.updateIntervalInMillis
         };
     }
     
@@ -16,15 +17,16 @@ export default class ExchangeRate extends React.Component {
         this.startTimer();
     }
 
-    componentWillReceiveProps(props) {
-        this.setState({updateIntervalInMillis: props.updateIntervalInMillis});
+    componentWillReceiveProps(newProps) {
+        if (this.state.updateIntervalInMillis != newProps.updateIntervalInMillis) {
+            this.setState({updateIntervalInMillis : newProps.updateIntervalInMillis}, 
+                () => {
+            this.stopTimer();
+            this.startTimer();
+            });
+        }
     }
     
-    componentWillUpdate(props) {
-        this.stopTimer();
-        this.startTimer();
-    }
-
     componentWillUnmount() {
         this.stopTimer();
     }
@@ -47,6 +49,8 @@ export default class ExchangeRate extends React.Component {
     }
 
     startTimer() {
+        console.log("new timer for interval");
+        console.log(this.state);
         this.timerID = setInterval(
             () => this.fetchRate(),
             this.state.updateIntervalInMillis
@@ -55,6 +59,7 @@ export default class ExchangeRate extends React.Component {
     }
     
     stopTimer() {
+        console.log("clear timer");
         clearInterval(this.timerID);
     }
     
