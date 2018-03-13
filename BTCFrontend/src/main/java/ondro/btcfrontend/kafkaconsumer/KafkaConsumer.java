@@ -69,11 +69,6 @@ public class KafkaConsumer implements KafkaListener {
     @Inject
     private BtcTxProcessor flowableSink;
 
-//    @OnRecord( topics={"btctx"})
-    public void getMessageTest(ConsumerRecord record) {
-        System.out.println("Got record on topic btctx " + record);
-    }
-    
     @OnRecord
     public void processBtcTxMessage(ConsumerRecord<Object, String> record) {
         System.out.println("Got record on topic btctx " + record);
