@@ -7,6 +7,7 @@ import io.reactivex.Scheduler;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.ObservesAsync;
 import javax.inject.Inject;
 import ondro.btcfrontend.Resource;
 
@@ -38,9 +39,11 @@ public class BtcTxProcessor {
         return flowable;
     }
 
-    public void emit(String data) {
+    public void emit(@ObservesAsync @BtcTx String data) {
         if (emitter != null) {
-            emitter.onNext(data);
+            synchronized (emitter) {
+                emitter.onNext(data);
+            }
         }
     }
 }

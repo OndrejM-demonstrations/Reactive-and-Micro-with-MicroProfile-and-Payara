@@ -45,6 +45,7 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
@@ -55,6 +56,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
  */
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "topics", propertyValue = "btctx"),
+    @ActivationConfigProperty(propertyName = "groupIdConfig", propertyValue = "testGroup"),
     @ActivationConfigProperty(propertyName = "bootstrapServersConfig", propertyValue = "localhost:9092"),
     @ActivationConfigProperty(propertyName = "keyDeserializer", propertyValue = "org.apache.kafka.common.serialization.StringDeserializer"),
     @ActivationConfigProperty(propertyName = "valueDeserializer", propertyValue = "org.apache.kafka.common.serialization.StringDeserializer")
@@ -62,12 +64,13 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 public class KafkaConsumer implements KafkaListener {
 
     @Inject
-    private BtcTxProcessor flowableSink;
+    @BtcTx
+    private Event<String> btcTxEvent;
 
     @OnRecord
     public void processBtcTxMessage(ConsumerRecord<Object, String> record) {
         System.out.println("Got record on topic btctx " + record);
-        flowableSink.emit(record.value());
+        btcTxEvent.fireAsync(record.value());
     }
 
 }
