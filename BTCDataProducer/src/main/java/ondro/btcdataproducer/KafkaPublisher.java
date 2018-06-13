@@ -2,15 +2,12 @@ package ondro.btcdataproducer;
 
 import fish.payara.cloud.connectors.kafka.api.KafkaConnection;
 import fish.payara.cloud.connectors.kafka.api.KafkaConnectionFactory;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.resource.ConnectionFactoryDefinition;
-import javax.resource.spi.TransactionSupport.TransactionSupportLevel;
 import ondro.btcdataproducer.util.Logging;
-import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -20,13 +17,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
  * @author Ondrej Mihalyi
  */
 @ConnectionFactoryDefinition(name = "java:global/env/KafkaConnectionFactory",
-        description = "Kafka Conn Factory",
         interfaceName = "fish.payara.cloud.connectors.kafka.KafkaConnectionFactory",
-        resourceAdapter = "kafka-rar",
-        minPoolSize = 2,
-        maxPoolSize = 2,
-        transactionSupport = TransactionSupportLevel.NoTransaction,
-        properties = {"requestTimeout=1000", "maxBlockMS=1000"})
+        resourceAdapter = "kafka-rar")
 @Stateless
 public class KafkaPublisher {
 

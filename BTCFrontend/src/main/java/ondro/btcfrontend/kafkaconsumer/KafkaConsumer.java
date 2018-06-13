@@ -55,14 +55,9 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
  */
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "topics", propertyValue = "btctx"),
-@ActivationConfigProperty(propertyName = "clientId", propertyValue = "testClient"),
-    @ActivationConfigProperty(propertyName = "groupIdConfig", propertyValue = "testGroup"),
     @ActivationConfigProperty(propertyName = "bootstrapServersConfig", propertyValue = "localhost:9092"),
-    @ActivationConfigProperty(propertyName = "autoCommitInterval", propertyValue = "100"),
-    @ActivationConfigProperty(propertyName = "retryBackoff", propertyValue = "1000"),
     @ActivationConfigProperty(propertyName = "keyDeserializer", propertyValue = "org.apache.kafka.common.serialization.StringDeserializer"),
-    @ActivationConfigProperty(propertyName = "valueDeserializer", propertyValue = "org.apache.kafka.common.serialization.StringDeserializer"),
-    @ActivationConfigProperty(propertyName = "pollInterval", propertyValue = "3000")
+    @ActivationConfigProperty(propertyName = "valueDeserializer", propertyValue = "org.apache.kafka.common.serialization.StringDeserializer")
 })
 public class KafkaConsumer implements KafkaListener {
 
