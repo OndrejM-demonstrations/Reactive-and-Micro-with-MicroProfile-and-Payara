@@ -53,9 +53,8 @@ image::img/DemoAppArchitecture.jpg[]
 ** Deploy `BTCmonitor/BTCDataProducer/target/BTCDataProducer.war`
 ** Access the app in the browser by default at http://localhost:8080/BTCFrontend/
 
-. **Run the applicaiton on Payara Micro**
+. **Run the application on Payara Micro**
 
-** Download Payara Micro 5.181 or newer from https://www.payara.fish
 ** Go to `BTCmonitor/BTCFrontend/target/` and run the frontend with:
 
   java -jar payara-micro.jar kafka-rar.rar BTCFrontend.war

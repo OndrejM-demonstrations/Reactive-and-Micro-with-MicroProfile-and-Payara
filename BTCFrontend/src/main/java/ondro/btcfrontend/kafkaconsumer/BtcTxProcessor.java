@@ -4,6 +4,7 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.Scheduler;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -38,6 +39,8 @@ public class BtcTxProcessor {
     }
 
     public void emit(String data) {
-        emitter.onNext(data);
+        if (emitter != null) {
+            emitter.onNext(data);
+        }
     }
 }

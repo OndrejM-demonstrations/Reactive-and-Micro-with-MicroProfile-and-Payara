@@ -48,8 +48,6 @@
         <dependency>
             <groupId>fish.payara.extras</groupId>
             <artifactId>payara-micro</artifactId>
-            <version>4.1.2.181</version>
-            <scope>runtime</scope>
         </dependency>
         
         <!-- Test deps for JAX-RS client -->      
