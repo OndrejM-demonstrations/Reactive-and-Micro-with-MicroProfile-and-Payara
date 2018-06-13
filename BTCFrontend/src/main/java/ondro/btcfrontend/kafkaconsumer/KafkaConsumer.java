@@ -55,6 +55,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
  */
 @MessageDriven(activationConfig = {
     @ActivationConfigProperty(propertyName = "topics", propertyValue = "btctx"),
+    @ActivationConfigProperty(propertyName = "groupIdConfig", propertyValue = "testGroup"),
     @ActivationConfigProperty(propertyName = "bootstrapServersConfig", propertyValue = "localhost:9092"),
     @ActivationConfigProperty(propertyName = "keyDeserializer", propertyValue = "org.apache.kafka.common.serialization.StringDeserializer"),
     @ActivationConfigProperty(propertyName = "valueDeserializer", propertyValue = "org.apache.kafka.common.serialization.StringDeserializer")
