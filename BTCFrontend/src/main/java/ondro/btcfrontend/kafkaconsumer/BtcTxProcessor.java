@@ -3,13 +3,9 @@ package ondro.btcfrontend.kafkaconsumer;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
-import io.reactivex.Scheduler;
-import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.ObservesAsync;
-import javax.inject.Inject;
-import ondro.btcfrontend.Resource;
 
 /**
  *
@@ -21,18 +17,12 @@ public class BtcTxProcessor {
     private FlowableEmitter<String> emitter;
     private Flowable<String> flowable;
 
-    @Inject
-    @Resource
-    private Scheduler scheduler;
-
     @PostConstruct
     public void init() {
         flowable = Flowable.<String>
           create(emitter -> {
             this.emitter = emitter;
-          }, BackpressureStrategy.DROP)
-          .subscribeOn(scheduler)
-          .observeOn(scheduler);
+          }, BackpressureStrategy.DROP);
     }
 
     public Flowable<String> flowable() {
