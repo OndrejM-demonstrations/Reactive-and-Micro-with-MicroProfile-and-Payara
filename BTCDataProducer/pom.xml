@@ -16,6 +16,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <debug.address>5004</debug.address>
     </properties>
     
     <dependencies>
@@ -53,8 +54,14 @@
             <groupId>com.pusher</groupId>
             <artifactId>pusher-java-client</artifactId>
             <version>1.8.0</version>
-        </dependency>        
+        </dependency>
         
+        <!-- Java EE API dependencies -->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+        </dependency>
+
         <!-- MicroProfile 1.2 dependency provided by Payara Server 
         and Micro in v4.1.2.181 and v5.181 -->
            
@@ -62,6 +69,25 @@
             <groupId>org.eclipse.microprofile</groupId>
             <artifactId>microprofile</artifactId>
             <type>pom</type>
+            <exclusions>
+                <!-- newer versions in Java EE 8 -->
+                <exclusion>
+                    <groupId>javax.enterprise</groupId>
+                    <artifactId>cdi-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.json</groupId>
+                    <artifactId>javax.json-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.inject</groupId>
+                    <artifactId>javax.inject</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.ws.rs</groupId>
+                    <artifactId>javax.ws.rs-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         
         <!-- Kafka connector API -->
@@ -75,12 +101,15 @@
             <artifactId>kafka-rar</artifactId>
             <type>rar</type>
         </dependency>
-        
-        <!-- Java EE API dependencies -->
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
     </dependencies>
     
     <build>
@@ -92,6 +121,9 @@
                 <executions>
                     <execution>
                         <id>kafka-rar</id>
+                    </execution>
+                    <execution>
+                        <id>slf4j</id>
                     </execution>
                     <execution>
                         <id>payara-micro</id>
@@ -114,12 +146,15 @@
                             </appendSystemProperties>
                             <commandLineOptions>
                                 <option>
-                                    <key>--clustermode</key>
-                                    <value>tcpip:127.0.0.1</value>
+                                    <key>--autobindhttp</key>
                                 </option>
                                 <option>
-                                    <key>--autoBindHttp</key>
-                                    <value>true</value>
+                                    <key>--port</key>
+                                    <value>8081</value>
+                                </option>
+                                <option>
+                                    <key>--addLibs</key>
+                                    <value>${project.build.directory}/slf4j-api.jar:${project.build.directory}/slf4j-jdk14.jar</value>
                                 </option>
                                 <option>
                                     <key>--deploy</key>
@@ -132,6 +167,35 @@
                                 <option>
                                     <key>--outputuberjar</key>
                                     <value>${project.build.directory}/${project.build.finalName}-bundle.jar</value>
+                                </option>
+                            </commandLineOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-cli</id>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <commandLineOptions>
+                                <option>
+                                    <key>--autobindhttp</key>
+                                </option>
+                                <option>
+                                    <key>--port</key>
+                                    <value>8081</value>
+                                </option>
+                                <option>
+                                    <key>--addLibs</key>
+                                    <value>${project.build.directory}/slf4j-api.jar:${project.build.directory}/slf4j-jdk14.jar</value>
+                                </option>
+                                <option>
+                                    <key>--deploy</key>
+                                    <value>${project.build.directory}/kafka-rar.rar</value>
+                                </option>
+                                <option>
+                                    <key>--deploy</key>
+                                    <value>${project.build.directory}/${project.build.finalName}</value>
                                 </option>
                             </commandLineOptions>
                         </configuration>
@@ -164,7 +228,54 @@
                                         </option>
                                         <option>
                                             <key>--autoBindHttp</key>
-                                            <value>true</value>
+                                        </option>
+                                        <option>
+                                            <key>--deploy</key>
+                                            <value>${project.build.directory}/kafka-rar.rar</value>
+                                        </option>
+                                        <option>
+                                            <key>--deploy</key>
+                                            <value>${project.build.directory}/${project.build.finalName}.war</value>
+                                        </option>
+                                    </commandLineOptions>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>rundebug</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>fish.payara.maven.plugins</groupId>
+                        <artifactId>payara-micro-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>run</id>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <javaCommandLineOptions>
+                                        <option>
+                                            <value>-Xdebug</value>
+                                        </option>
+                                        <option>
+                                            <key>-Xrunjdwp:transport</key>
+                                            <value>dt_socket,server=y,suspend=y,address=${debug.address}</value>
+                                        </option>
+                                    </javaCommandLineOptions>
+                                    <commandLineOptions>
+                                        <option>
+                                            <key>--clustermode</key>
+                                            <value>tcpip:127.0.0.1</value>
+                                        </option>
+                                        <option>
+                                            <key>--autoBindHttp</key>
                                         </option>
                                         <option>
                                             <key>--deploy</key>

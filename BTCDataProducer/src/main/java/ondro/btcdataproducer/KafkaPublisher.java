@@ -5,6 +5,7 @@ import fish.payara.cloud.connectors.kafka.api.KafkaConnectionFactory;
 import java.util.logging.Level;
 import javax.annotation.Resource;
 import javax.ejb.Stateless;
+import javax.enterprise.event.ObservesAsync;
 import javax.inject.Inject;
 import javax.resource.ConnectionFactoryDefinition;
 import ondro.btcdataproducer.util.Logging;
@@ -29,7 +30,7 @@ public class KafkaPublisher {
     @ConfigProperty(name = "kafka.topic.name", defaultValue = "btctx")
     private String topicName;
 
-    public void sendBtcTxMessage(String value) throws Exception {
+    public void sendBtcTxMessage(@ObservesAsync @BtcTx String value) throws Exception {
 
         try (KafkaConnection conn = factory.createConnection()) {
             conn.send(new ProducerRecord<>(topicName, value), (RecordMetadata metadata, Exception e) -> {
