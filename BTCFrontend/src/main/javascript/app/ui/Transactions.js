@@ -7,7 +7,8 @@ export default class Transactions extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            transactions: []
+            transactions: [],
+            btcRateConnected: false
         };
     }
 
@@ -16,9 +17,18 @@ export default class Transactions extends React.Component {
         source.onmessage = (event) => {
             console.log("Received: " + event.data);
             const transaction = JSON.parse(event.data);
-            this.setState((prevState, props) => ({
-                transactions:[transaction].concat(prevState.transactions).slice(0,100)
-            }));
+            if (transaction.appEvent) {
+                if (transaction.event == "BTC_RATE_CONNECTED") {
+                    this.setState({
+                        btcRateConnected: true
+                    });
+                }
+            } else {
+                this.setState((prevState, props) => ({
+                    transactions:[transaction].concat(prevState.transactions).slice(0,100),
+                    btcRateConnected: true
+                }));
+            }
         };
     }
 
@@ -33,7 +43,7 @@ export default class Transactions extends React.Component {
                 </Table.Row>
                 );
         });
-        if (this.state.transactions.length > 0) {
+        if (this.state.transactions.length > 0 || this.state.btcRateConnected) {
             return (
                 <Table celled>
                     <Table.Header>

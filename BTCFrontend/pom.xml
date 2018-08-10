@@ -17,6 +17,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <skip.webpack.watch>true</skip.webpack.watch>
+        <debug.address>5005</debug.address>
     </properties>
     
     <dependencies>
@@ -25,13 +26,11 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
             <scope>test</scope>
         </dependency>        
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.9.1</version>
             <scope>test</scope>
         </dependency>          
         <dependency>
@@ -42,7 +41,6 @@
         <dependency>
             <groupId>fish.payara.arquillian</groupId>
             <artifactId>arquillian-payara-micro-5-managed</artifactId>
-            <version>1.0.Beta3-m3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -74,7 +72,6 @@
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
-            <version>8.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -82,7 +79,6 @@
         <dependency>
             <groupId>org.eclipse.microprofile</groupId>
             <artifactId>microprofile</artifactId>
-            <version>1.2</version>
             <type>pom</type>
             <scope>provided</scope>
         </dependency>
@@ -106,16 +102,23 @@
         <dependency>
             <groupId>fish.payara.cloud.connectors.kafka</groupId>
             <artifactId>kafka-jca-api</artifactId>
-            <version>0.3.0-SNAPSHOT</version>            
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency> 
         <dependency>
             <groupId>fish.payara.cloud.connectors.kafka</groupId>
             <artifactId>kafka-rar</artifactId>
-            <version>0.3.0-SNAPSHOT</version>
             <scope>runtime</scope>
             <type>rar</type>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -126,10 +129,71 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>slf4j</id>
+                    </execution>
+                    <execution>
                         <id>kafka-rar</id>
                     </execution>
                     <execution>
                         <id>payara-micro</id>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>fish.payara.maven.plugins</groupId>
+                <artifactId>payara-micro-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>package-uber-jar</id>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <phase>install</phase>
+                        <configuration>
+                            <appendSystemProperties>
+                                
+                            </appendSystemProperties>
+                            <commandLineOptions>
+                                <option>
+                                    <key>--addLibs</key>
+                                    <value>${project.build.directory}/slf4j-api.jar:${project.build.directory}/slf4j-jdk14.jar</value>
+                                </option>
+                                <option>
+                                    <key>--deploy</key>
+                                    <value>${project.build.directory}/kafka-rar.rar</value>
+                                </option>
+                                <option>
+                                    <key>--deploy</key>
+                                    <value>${project.build.directory}/${project.build.finalName}.war</value>
+                                </option>
+                                <option>
+                                    <key>--outputuberjar</key>
+                                    <value>${project.build.directory}/${project.build.finalName}-bundle.jar</value>
+                                </option>
+                            </commandLineOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-cli</id>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <commandLineOptions>
+                                <option>
+                                    <key>--addLibs</key>
+                                    <value>${project.build.directory}/slf4j-api.jar:${project.build.directory}/slf4j-jdk14.jar</value>
+                                </option>
+                                <option>
+                                    <key>--deploy</key>
+                                    <value>${project.build.directory}/kafka-rar.rar</value>
+                                </option>
+                                <option>
+                                    <key>--deploy</key>
+                                    <value>${project.build.directory}/${project.build.finalName}</value>
+                                </option>
+                            </commandLineOptions>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -199,7 +263,7 @@
     
     <profiles>
         <profile>
-            <id>fastbuild</id>
+            <id>fastwebbuild</id>
             <properties>
                 <skip.install.npm>true</skip.install.npm>
                 <skip.install.npm.modules>true</skip.install.npm.modules>
@@ -208,13 +272,64 @@
             </properties>
         </profile>
         <profile>
-            <id>fastwebbuild</id>
+            <id>fastnowebbuild</id>
             <properties>
                 <skip.install.npm>true</skip.install.npm>
                 <skip.install.npm.modules>true</skip.install.npm.modules>
                 <skip.webpack.build>true</skip.webpack.build>
                 <skip.webpack.watch>true</skip.webpack.watch>
             </properties>
+        </profile>
+        <profile>
+            <id>rundebug</id>
+            <properties>
+                <skip.install.npm>true</skip.install.npm>
+                <skip.install.npm.modules>true</skip.install.npm.modules>
+                <skip.webpack.build>true</skip.webpack.build>
+                <skip.webpack.watch>true</skip.webpack.watch>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>fish.payara.maven.plugins</groupId>
+                        <artifactId>payara-micro-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>start-debug</id>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <javaCommandLineOptions>
+                                        <option>
+                                            <value>-Xdebug</value>
+                                        </option>
+                                        <option>
+                                            <key>-Xrunjdwp:transport</key>
+                                            <value>dt_socket,server=y,suspend=y,address=${debug.address}</value>
+                                        </option>
+                                    </javaCommandLineOptions>
+                                    <commandLineOptions>
+                                        <option>
+                                            <key>--addLibs</key>
+                                            <value>${project.build.directory}/slf4j-api.jar:${project.build.directory}/slf4j-jdk14.jar</value>
+                                        </option>
+                                        <option>
+                                            <key>--deploy</key>
+                                            <value>${project.build.directory}/kafka-rar.rar</value>
+                                        </option>
+                                        <option>
+                                            <key>--deploy</key>
+                                            <value>${project.build.directory}/${project.build.finalName}.war</value>
+                                        </option>
+                                    </commandLineOptions>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
     

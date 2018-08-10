@@ -16,16 +16,6 @@ image::img/DemoAppArchitecture.jpg[]
 
 # Run the demo
 
-. **Build prerequisites**:
-
-** Payara Micro maven plugin
-*** download from https://github.com/payara/ecosystem-maven/tree/master/payara-micro-maven-plugin
-*** build and install with `mvn install`
-
-** Cloud Connectors
-*** download from https://github.com/payara/Cloud-Connectors
-*** build and install with `mvn install`
-
 . **Build application with:**
 
   `mvn install`
@@ -47,7 +37,7 @@ image::img/DemoAppArchitecture.jpg[]
 . **Run the application on Payara Server** +
   __Alternatively jump to step 4 to run on Payara Micro__
 
-** Install and run Payara Server 5.181 or newer from https://www.payara.fish
+** Install and run Payara Server 5.182 or newer from https://www.payara.fish
 ** Deploy `BTCmonitor/BTCFrontend/target/kafka-rar.rar` to the server (make sure that it's deployed with the name `kafka-rar` which should be set by default)
 ** Deploy `BTCmonitor/BTCFrontend/target/BTCFrontend.war`
 ** Deploy `BTCmonitor/BTCDataProducer/target/BTCDataProducer.war`
@@ -64,3 +54,24 @@ image::img/DemoAppArchitecture.jpg[]
     java -jar payara-micro.jar --autoBindHttp kafka-rar.rar BTCDataProducer.war
 
 ** Access the app in the browser at http://localhost:8080/BTCFrontend/
+
+
+# Development mode
+
+The frontend of the application (BTCFrontend) can be developed faster without the full build and deploy cycle.
+
+Before development, run the following in the `BTCFrontend` directory:
+
+```
+mvn -Pfastwebbuild install
+```
+
+This will keep running and will rebuild all the web resources (HTML, JS) on the fly when changed.
+
+You also need to deploy an exploded WAR file so that the changes are picked up by Payara Server.
+
+To apply changes in Java code, run the following in top level project to build the app. This will skip building the web resources:
+
+```
+mvn -Pfastnowebbuild install
+```
