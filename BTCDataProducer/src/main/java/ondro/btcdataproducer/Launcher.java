@@ -1,7 +1,6 @@
 package ondro.btcdataproducer;
 
-import com.pusher.client.connection.ConnectionEventListener;
-import com.pusher.client.connection.ConnectionStateChange;
+import com.pusher.client.connection.*;
 import java.util.logging.Level;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
@@ -32,7 +31,7 @@ public class Launcher {
     private Event<String> btcTxEvent;
 
     private BitstampConnector bitstampConnector;
-    
+
     Jsonb jsonb = JsonbBuilder.create();
 
     public void start(@Observes @Initialized(ApplicationScoped.class) Object context) {
@@ -48,12 +47,15 @@ public class Launcher {
             }, executor, new ConnectionEventListener() {
                 @Override
                 public void onConnectionStateChange(ConnectionStateChange change) {
-                    try {
-                        String btcRateConnected = jsonb.toJson(new ApplicationEvent(AppEventType.BTC_RATE_CONNECTED));
-                        btcTxEvent.fireAsync(btcRateConnected);
-                    } catch (Exception ex) {
-                        Logging.of(this).log(Level.SEVERE, null, ex);
-                        throw new RuntimeException();
+                    if (change.getCurrentState().compareTo(ConnectionState.CONNECTED) == 0) {
+                        try {
+                            String btcRateConnected = jsonb.toJson(
+                                    new ApplicationEvent(AppEventType.BTC_RATE_CONNECTED));
+                            btcTxEvent.fireAsync(btcRateConnected);
+                        } catch (Exception ex) {
+                            Logging.of(this).log(Level.SEVERE, null, ex);
+                            throw new RuntimeException();
+                        }
                     }
                 }
 

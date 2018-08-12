@@ -19,10 +19,11 @@ public class BtcTxProcessor {
 
     @PostConstruct
     public void init() {
-        flowable = Flowable.<String>
-          create(emitter -> {
-            this.emitter = emitter;
-          }, BackpressureStrategy.DROP);
+        synchronized (this) {
+            flowable = Flowable.<String>create(
+                    e -> this.emitter = e,
+                    BackpressureStrategy.LATEST);
+        }
     }
 
     public Flowable<String> flowable() {
@@ -30,10 +31,9 @@ public class BtcTxProcessor {
     }
 
     public void emit(@ObservesAsync @BtcTx String data) {
-        if (emitter != null) {
-            synchronized (emitter) {
-                emitter.onNext(data);
-            }
+        // onNext must be run sequentially and also wait for init() method
+        synchronized (this) {
+            emitter.onNext(data);
         }
     }
 }
