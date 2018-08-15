@@ -2,9 +2,10 @@ package ondro.btcfrontend.kafkaconsumer;
 
 import fish.payara.cloud.connectors.kafka.api.KafkaListener;
 import fish.payara.cloud.connectors.kafka.api.OnRecord;
+import io.reactivex.FlowableEmitter;
+import java.util.concurrent.ExecutorService;
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
@@ -24,12 +25,19 @@ public class KafkaConsumer implements KafkaListener {
 
     @Inject
     @BtcTx
-    private Event<String> btcTxEvent;
-
+    FlowableEmitter<String> emitter;
+    
+    @Inject
+    @BtcTx
+    ExecutorService sequentialExecutor;
+    
     @OnRecord
     public void processBtcTxMessage(ConsumerRecord<Object, String> record) {
         System.out.println("Got record on topic btctx " + record);
-        btcTxEvent.fireAsync(record.value());
+        // onNext must be called sequentially because it's not thread-safe
+        sequentialExecutor.submit( () -> {
+            emitter.onNext(record.value());
+        });
     }
 
 }

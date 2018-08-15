@@ -1,5 +1,6 @@
 package ondro.btcfrontend.boundary;
 
+import io.reactivex.Flowable;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -12,7 +13,8 @@ import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 import ondro.btcdataproducer.util.Logging;
-import ondro.btcfrontend.kafkaconsumer.BtcTxProcessor;
+import ondro.btcfrontend.kafkaconsumer.BtcTx;
+import org.reactivestreams.Publisher;
 
 /**
  *
@@ -22,24 +24,23 @@ import ondro.btcfrontend.kafkaconsumer.BtcTxProcessor;
 @ApplicationScoped
 public class BtcTxResource {
 
-    @Inject
-    private BtcTxProcessor btcTransactions;
+    @Inject @BtcTx
+    private Publisher<String> btcTransactions;
 
     private SseBroadcaster btcTxBroadcaster;
 
     @Context
     private void setSse(Sse sse) {
         this.btcTxBroadcaster = sse.newBroadcaster();
-        OutboundSseEvent.Builder sseDataEventBuilder = sse.newEventBuilder()
+        OutboundSseEvent.Builder eventBuilder = sse.newEventBuilder()
                 .mediaType(MediaType.APPLICATION_JSON_TYPE);
-        this.btcTransactions.flowable()
+        Flowable.fromPublisher(btcTransactions)
                 .doOnNext(data -> {
                     Logging.of(this).info("Sending event: " + data);
                 })
                 .map(data -> {
-                    return sseDataEventBuilder
+                    return eventBuilder
                             .data(data)
-                            .mediaType(MediaType.APPLICATION_JSON_TYPE)
                             .build();
                 })
                 .doOnError(e -> {

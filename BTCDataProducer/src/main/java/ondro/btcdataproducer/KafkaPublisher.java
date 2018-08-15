@@ -10,7 +10,6 @@ import javax.inject.Inject;
 import javax.resource.ConnectionFactoryDefinition;
 import ondro.btcdataproducer.util.Logging;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
@@ -33,7 +32,7 @@ public class KafkaPublisher {
     public void sendBtcTxMessage(@ObservesAsync @BtcTx String value) throws Exception {
 
         try (KafkaConnection conn = factory.createConnection()) {
-            conn.send(new ProducerRecord<>(topicName, value), (RecordMetadata metadata, Exception e) -> {
+            conn.send(new ProducerRecord<>(topicName, value), (metadata, e) -> {
                if (e != null) {
                    Logging.of(KafkaPublisher.class).log(Level.WARNING, e.getMessage(), e);
                } 

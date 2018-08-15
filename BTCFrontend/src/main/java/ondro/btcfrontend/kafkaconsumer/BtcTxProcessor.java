@@ -5,7 +5,8 @@ import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.ObservesAsync;
+import javax.enterprise.inject.Produces;
+import org.reactivestreams.Publisher;
 
 /**
  *
@@ -19,21 +20,23 @@ public class BtcTxProcessor {
 
     @PostConstruct
     public void init() {
-        synchronized (this) {
-            flowable = Flowable.<String>create(
-                    e -> this.emitter = e,
-                    BackpressureStrategy.LATEST);
-        }
+        this.flowable = Flowable.<String>create(
+                e -> this.emitter = e,
+                BackpressureStrategy.LATEST);
     }
 
-    public Flowable<String> flowable() {
+    @Produces
+    @ApplicationScoped
+    @BtcTx
+    public Publisher<String> flowable() {
         return flowable;
     }
-
-    public void emit(@ObservesAsync @BtcTx String data) {
-        // onNext must be run sequentially and also wait for init() method
-        synchronized (this) {
-            emitter.onNext(data);
-        }
+    
+    @Produces
+    @ApplicationScoped
+    @BtcTx
+    public FlowableEmitter<String> emitter() {
+        return emitter;
     }
+
 }

@@ -55,13 +55,13 @@
             <dependency>
                 <groupId>fish.payara.cloud.connectors.kafka</groupId>
                 <artifactId>kafka-jca-api</artifactId>
-                <version>0.3.0-SNAPSHOT</version>            
+                <version>0.3.0</version>            
                 <scope>provided</scope>
             </dependency> 
             <dependency>
                 <groupId>fish.payara.cloud.connectors.kafka</groupId>
                 <artifactId>kafka-rar</artifactId>
-                <version>0.3.0-SNAPSHOT</version>
+                <version>0.3.0</version>
                 <scope>provided</scope>
                 <type>rar</type>
             </dependency>
